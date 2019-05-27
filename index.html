@@ -1,17 +1,26 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>TestWebgl Shader</title> <meta charset="utf-8">
-    <style>*{box-sizing:border-box; margin:0; padding:0;}</style>
+    <title>TestWebgl Shader</title>
+    <meta charset="utf-8">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
+
 <body>
     <div id="container"></div>
 </body>
 
-    <script src="js/three.min.js"></script>
-    <script src="js/OrbitControls.js"></script>
+<script src="js/three.min.js"></script>
+<script src="js/OrbitControls.js"></script>
 
-    <script type="x-shader/x-vertex" id="vertexShader">
+<script type="x-shader/x-vertex" id="vertexShader">
 
 varying vec2 vUv;
 
@@ -26,9 +35,9 @@ void main() {
 
 
 
-    </script>
+</script>
 
-    <script type="x-shader/x-vertex" id="fragmentShader">
+<script type="x-shader/x-vertex" id="fragmentShader">
 varying vec2 vUv;
 
 void main() {
@@ -38,74 +47,105 @@ void main() {
 }
     </script>
 
-  <script type="text/javascript" id="mainCode">
+<script type="text/javascript" id="mainCode">
 
 
- var
-    container,
-    renderer,
-    scene,
-    material,
-    camera,
-    mesh,
-    start = Date.now(),
-    fov = 30;
+    var
+        container,
+        renderer,
+        scene,
+        material,
+        camera,
+        mesh,
+        start = Date.now(),
+        fov = 30;
 
-window.addEventListener( 'load', function() {
-    container = document.getElementById( "container" );
+    window.addEventListener('load', function () {
+        container = document.getElementById("container");
 
-    scene = new THREE.Scene();
-
-    camera = new THREE.PerspectiveCamera(
-        fov,
-        window.innerWidth / window.innerHeight,
-        1,
-        10000 );
-    camera.position.z = 100;
-
-    material = new THREE.ShaderMaterial( {
-        vertexShader: document.getElementById( 'vertexShader' ).textContent,
-        fragmentShader: document.getElementById( 'fragmentShader' ).textContent
-    } );
-
-     mesh = new THREE.Mesh(
-        new THREE.IcosahedronGeometry( 20, 4 ),
-        material
-    );
-    scene.add( mesh );
-
-    renderer = new THREE.WebGLRenderer();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    renderer.setPixelRatio( window.devicePixelRatio );
-
-    container.appendChild( renderer.domElement );
-
-    var controls = new THREE.OrbitControls( camera, renderer.domElement );
-
-    onWindowResize();
-    window.addEventListener( 'resize', onWindowResize );
-
-    render();
-
-});
-
-function onWindowResize () {
-
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-
-}
-
-function render() {
-
-    renderer.render( scene, camera );
-    requestAnimationFrame( render );
-
-}
+        scene = new THREE.Scene();
 
 
-  </script>
+        var sphere = new THREE.SphereBufferGeometry(5, 32, 32);
+
+        var loader = new THREE.TextureLoader();
+        loader.load(
+            'pic/earth.jpg',
+            function (texture) {
+                var material = new THREE.MeshPhongMaterial({
+                    map: texture
+                });
+                earth = new THREE.Mesh(sphere, material);
+                //  scene.add( earth );
+                scene.add(earth);
+                loader.load('pic/earth_bump.jpg',
+                    function (texture) {
+                        earth.bumpmap = texture;
+                    });
+            }
+        );
+
+        camera = new THREE.PerspectiveCamera(
+            fov,
+            window.innerWidth / window.innerHeight,
+            1,
+            10000);
+        camera.position.z = 100;
+
+        material = new THREE.ShaderMaterial({
+            vertexShader: document.getElementById('vertexShader').textContent,
+            fragmentShader: document.getElementById('fragmentShader').textContent
+        });
+
+        mesh = new THREE.Mesh(
+            new THREE.IcosahedronGeometry(20, 4),
+            material
+        );
+        scene.add(mesh);
+
+        scene.background = new THREE.CubeTextureLoader()
+            .setPath('pic/')
+            .load([
+                'sky_0.jpg', 'sky_1.jpg',
+                'sky_3.jpg', 'sky_2.jpg',
+                'sky_4.jpg', 'sky_5.jpg'
+            ]);
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        container.appendChild(renderer.domElement);
+
+        var controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        onWindowResize();
+        window.addEventListener('resize', onWindowResize);
+
+
+
+        render();
+
+    });
+
+    function onWindowResize() {
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+    }
+
+    function render() {
+
+        renderer.render(scene, camera);
+
+        requestAnimationFrame(render);
+
+    }
+
+
+</script>
 
 
 </html>>
